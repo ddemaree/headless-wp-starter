@@ -1,14 +1,59 @@
 FROM wordpress:latest
 
-# COPY wp-content/plugins/* /usr/src/wordpress/wp-content/plugins/
-WORKDIR /usr/src/wordpress/wp-content
-COPY wp-content/plugins/advanced-custom-fields-pro plugins/advanced-custom-fields-pro 
-COPY wp-content/plugins/acf-to-wp-api plugins/acf-to-wp-api 
-COPY wp-content/themes/postlight-headless-wp themes/postlight-headless-wp
-RUN rm plugins/hello.php
-RUN rm -r plugins/akismet
-RUN rm -r themes/twenty* 
+# Install unzip to unpack plugins
+RUN apt-get update && apt-get install -y unzip
 
-ADD wp-content/plugins/gcs.zip plugins/gcs 
-# ADD --chown=www-data:www-data https://downloads.wordpress.org/plugin/gcs.0.1.3.zip plugins/
-# RUN unzip plugins/gcs.0.1.3.zip
+# Tell PHP to allow larger uploads
+COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
+# Install wp-cli to /usr/local/bin/wp
+ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /usr/local/bin/wp
+RUN chmod +rx /usr/local/bin/wp
+
+# COPY wp-content/plugins/* /usr/src/wordpress/wp-content/plugins/
+# WORKDIR /usr/src/wordpress/wp-content
+
+# Remove default themes and install Postlight headless theme
+RUN rm -r /usr/src/wordpress/wp-content/themes/twenty*
+COPY wp-content/themes/postlight-headless-wp /usr/src/wordpress/wp-content/themes/postlight-headless-wp
+
+# Copy plugins from this repo into wp-content
+# TODO: Load these ones too from wordpress.org
+COPY wp-content/plugins/advanced-custom-fields-pro /usr/src/wordpress/wp-content/plugins/advanced-custom-fields-pro 
+COPY wp-content/plugins/acf-to-wp-api /usr/src/wordpress/wp-content/plugins/acf-to-wp-api 
+
+# Auth0 plugin (allows federated login)
+# TODO: Write script to remove all this repeated shit
+RUN curl -o auth0.zip -SL https://downloads.wordpress.org/plugin/auth0.zip \
+      && unzip auth0.zip -d /usr/src/wordpress/wp-content/plugins/ \
+      && rm auth0.zip
+
+# Gutenberg editor beta
+RUN curl -o gutenberg.zip -SL https://downloads.wordpress.org/plugin/gutenberg.zip \
+      && unzip gutenberg.zip -d /usr/src/wordpress/wp-content/plugins/ \
+      && rm gutenberg.zip
+
+# WordPress data importer
+RUN curl -o wordpress-importer.zip -SL https://downloads.wordpress.org/plugin/wordpress-importer.zip \
+      && unzip wordpress-importer.zip -d /usr/src/wordpress/wp-content/plugins/ \
+      && rm wordpress-importer.zip
+
+# Google Cloud Storage for assets
+RUN curl -o gcs.zip -SL https://downloads.wordpress.org/plugin/gcs.zip \
+      && unzip gcs.zip -d /usr/src/wordpress/wp-content/plugins/ \
+      && rm gcs.zip
+
+# Remove default plugins
+RUN rm /usr/src/wordpress/wp-content/plugins/hello.php
+RUN rm -r /usr/src/wordpress/wp-content/plugins/akismet
+
+COPY ./wp-config-sample.php /usr/src/wordpress/wp-config-sample.php
+
+RUN chown -R www-data:www-data /usr/src/wordpress
+# RUN chown -R www-data:www-data /var/www/html
+
+# Set workdir back to /var/www/html (because the entrypoint expects that)
+# WORKDIR /var/www/html
+
+# COPY ./docker-entrypoint.sh /usr/local/bin/
+# RUN chmod a+x /usr/local/bin/docker-entrypoint.sh
