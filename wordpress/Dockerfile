@@ -21,6 +21,7 @@ COPY wp-content/themes/postlight-headless-wp /usr/src/wordpress/wp-content/theme
 # TODO: Load these ones too from wordpress.org
 COPY wp-content/plugins/advanced-custom-fields-pro /usr/src/wordpress/wp-content/plugins/advanced-custom-fields-pro 
 COPY wp-content/plugins/acf-to-wp-api /usr/src/wordpress/wp-content/plugins/acf-to-wp-api 
+COPY wp-content/plugins/custom-post-type-ui /usr/src/wordpress/wp-content/plugins/custom-post-type-ui 
 
 # Auth0 plugin (allows federated login)
 # TODO: Write script to remove all this repeated shit
