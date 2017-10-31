@@ -66,6 +66,7 @@ if( $_ENV['WP_SITEURL'] ) define( 'WP_SITEURL', $_ENV['WP_SITEURL'] );
 if( $_ENV['WP_HOME'] ) define( 'WP_HOME', $_ENV['WP_HOME'] );
 
 if(isset($_ENV['WORDPRESS_NETWORK_DOMAIN'])) {
+  define('WP_DEFAULT_THEME', 'postlight-headless-wp');
   define('COOKIE_DOMAIN', $_SERVER['HTTP_HOST']);
   define('MULTISITE', true);
   define('SUBDOMAIN_INSTALL', true);
