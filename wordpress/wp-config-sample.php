@@ -58,12 +58,23 @@ $table_prefix  = 'wp_';
  *
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
-define('WP_DEBUG', false);
+define('WP_DEBUG', true);
 define('WP_ALLOW_MULTISITE', true);
 
 // Override the site/home URLs to make it easier to reuse production data dumps
 if( $_ENV['WP_SITEURL'] ) define( 'WP_SITEURL', $_ENV['WP_SITEURL'] );
 if( $_ENV['WP_HOME'] ) define( 'WP_HOME', $_ENV['WP_HOME'] );
+
+if(isset($_ENV['WORDPRESS_NETWORK_DOMAIN'])) {
+  define('COOKIE_DOMAIN', $_SERVER['HTTP_HOST']);
+  define('MULTISITE', true);
+  define('SUBDOMAIN_INSTALL', true);
+  define('DOMAIN_CURRENT_SITE', $_ENV['WORDPRESS_NETWORK_DOMAIN']);
+  define('PATH_CURRENT_SITE', '/');
+  define('SITE_ID_CURRENT_SITE', 1);
+  define('BLOG_ID_CURRENT_SITE', 1);
+}
+
 
 // Disable automatic updates; they won't work inside the Docker container anyway so the prompts would just be annoying
 define( 'DISALLOW_FILE_EDIT', true );
@@ -72,14 +83,14 @@ define( 'AUTOMATIC_UPDATER_DISABLED', true );
 define( 'WP_AUTO_UPDATE_CORE', false );
 
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
-	$_SERVER['HTTPS'] = 'on';
+  $_SERVER['HTTPS'] = 'on';
 }
 
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */
 if ( !defined('ABSPATH') )
-	define('ABSPATH', dirname(__FILE__) . '/');
+  define('ABSPATH', dirname(__FILE__) . '/');
 
 /** Sets up WordPress vars and included files. */
 require_once(ABSPATH . 'wp-settings.php');
