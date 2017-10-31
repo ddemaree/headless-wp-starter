@@ -58,7 +58,7 @@ $table_prefix  = 'wp_';
  *
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
-define('WP_DEBUG', true);
+define('WP_DEBUG', false);
 define('WP_ALLOW_MULTISITE', true);
 
 // Override the site/home URLs to make it easier to reuse production data dumps
