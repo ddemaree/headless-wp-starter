@@ -10,9 +10,6 @@ COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /usr/local/bin/wp
 RUN chmod +rx /usr/local/bin/wp
 
-# COPY wp-content/plugins/* /usr/src/wordpress/wp-content/plugins/
-# WORKDIR /usr/src/wordpress/wp-content
-
 # Remove default themes and install Postlight headless theme
 RUN rm -r /usr/src/wordpress/wp-content/themes/twenty*
 COPY wp-content/themes/postlight-headless-wp /usr/src/wordpress/wp-content/themes/postlight-headless-wp
@@ -49,9 +46,9 @@ RUN rm /usr/src/wordpress/wp-content/plugins/hello.php
 RUN rm -r /usr/src/wordpress/wp-content/plugins/akismet
 
 COPY ./wp-config-sample.php /usr/src/wordpress/wp-config-sample.php
+COPY ./wp-config.php /usr/src/wordpress/wp-config.php
 
 RUN chown -R www-data:www-data /usr/src/wordpress
-# RUN chown -R www-data:www-data /var/www/html
 
 RUN mkdir -p /var/www/sites/wordpress
 RUN cp -R /usr/src/wordpress/* /var/www/sites/wordpress/
@@ -59,5 +56,7 @@ RUN chown -R www-data:www-data /var/www/sites/wordpress
 
 # Replace default site config so that Apache will use the WP build outside the volume
 COPY ./default-site.conf /etc/apache2/sites-available/000-default.conf
+COPY ./htaccess.conf /var/www/sites/wordpress/.htaccess
+RUN chown www-data:www-data /var/www/sites/wordpress/.htaccess
 
-RUN echo "<h1>Hello new WP friend</h1>" >> /var/www/sites/wordpress/hi-david.html
+CMD apache2-foreground
