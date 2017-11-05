@@ -135,5 +135,3 @@ function slug_get_link_url( $object, $field_name, $request ) {
 }
 
 
-?>
-
