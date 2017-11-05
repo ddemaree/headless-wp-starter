@@ -1,6 +1,7 @@
 /index.php
 /wp-*.php
 !/wp-config-sample.php
+!/wp-config.php
 /wp-content/index.php
 /wp-content/plugins/index.php
 /wp-content/themes/index.php
