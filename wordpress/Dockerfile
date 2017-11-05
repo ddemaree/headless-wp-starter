@@ -53,8 +53,11 @@ COPY ./wp-config-sample.php /usr/src/wordpress/wp-config-sample.php
 RUN chown -R www-data:www-data /usr/src/wordpress
 # RUN chown -R www-data:www-data /var/www/html
 
-# Set workdir back to /var/www/html (because the entrypoint expects that)
-# WORKDIR /var/www/html
+RUN mkdir -p /var/www/sites/wordpress
+RUN cp -R /usr/src/wordpress/* /var/www/sites/wordpress/
+RUN chown -R www-data:www-data /var/www/sites/wordpress
 
-# COPY ./docker-entrypoint.sh /usr/local/bin/
-# RUN chmod a+x /usr/local/bin/docker-entrypoint.sh
+# Replace default site config so that Apache will use the WP build outside the volume
+COPY ./default-site.conf /etc/apache2/sites-available/000-default.conf
+
+RUN echo "<h1>Hello new WP friend</h1>" >> /var/www/sites/wordpress/hi-david.html
